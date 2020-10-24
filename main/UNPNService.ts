@@ -1,14 +1,14 @@
 import MainWindow from "./MainWindow";
+const upnp = require('node-upnp-utils');
+const UPnPRemote = require('node-upnp-remote');
 
 export default class UNPNService {
 
     private mainWindow: MainWindow = MainWindow.getInstance()
-    private upnp = require('node-upnp-utils');
-    private devices = []
-    private movie
-    private UPnPRemote = require('node-upnp-remote');
-    private remote
-    private connected
+    private devices: any[] = []
+    private movie: any = null
+    private remote: any = null
+    private connected: any = null
     private playing = false
     private volume = 0
 
@@ -20,10 +20,10 @@ export default class UNPNService {
         }
         this.mainWindow.send('device-status-change', 'scanning')
 
-        this.upnp.startDiscovery();
+        upnp.startDiscovery();
         setTimeout(() => {
-            this.upnp.stopDiscovery(async () => {
-                let deviceList = this.upnp.getActiveDeviceList();
+            upnp.stopDiscovery(async () => {
+                let deviceList = upnp.getActiveDeviceList();
                 for (let device of deviceList) {
                     let ip = device['address'];
                     let name = device['description']['device']['friendlyName'];
@@ -41,16 +41,15 @@ export default class UNPNService {
             });
         }, 10000);
 
-
     }
 
-    private async check(name, url) {
+    private async check(name: string, url: string) {
 
         if (name.indexOf("盒子") < 0) {
             return false
         }
         try {
-            const remote = new this.UPnPRemote({
+            const remote = new UPnPRemote({
                 url: url
             });
             await remote.play()
@@ -60,7 +59,7 @@ export default class UNPNService {
         }
     }
 
-    public async connect(deviceIndex) {
+    public async connect(deviceIndex: number) {
         let device = this.devices[deviceIndex]
 
         if (device == null || this.remote != null) {
@@ -68,10 +67,10 @@ export default class UNPNService {
         }
 
         try {
-            this.remote = new this.UPnPRemote({
+            this.remote = new UPnPRemote({
                 url: device.url
             })
-            this.remote.on('Volume', vol => {
+            this.remote.on('Volume', (vol: number) => {
                 this.volume = vol
                 this.mainWindow.send('device-volume-change', vol)
             })
@@ -103,7 +102,7 @@ export default class UNPNService {
         }
     }
 
-    public async setMovie(url) {
+    public async setMovie(url: string) {
         if (!this.remote) {
             return
         }
@@ -142,12 +141,18 @@ export default class UNPNService {
         this.mainWindow.send('device-play-change', false)
     }
 
-    public setVolume(vol) {
+    public setVolume(vol: number) {
         if (!this.remote) {
             return
         }
         this.remote.setVolume(vol)
+    }
 
+    public seek(pos: number) {
+        if (!this.remote) {
+            return
+        }
+        this.remote.seek(pos)
     }
 
     public fetchStatus() {

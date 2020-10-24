@@ -57,6 +57,8 @@
             <a-button @click="onVolumePlus">音量+</a-button>
             <a-button @click="onPlay" :disabled="playing">播放</a-button>
             <a-button @click="onPause" :disabled="!playing">暂停</a-button>
+            <a-input v-model:value="seek" type="number" style="width: 100px; margin-right: 10px"/>
+            <a-button @click="onSeek" :disabled="!playing">设置进度</a-button>
             <a-button @click="onDisconnect">断开连接</a-button>
           </template>
           <template v-else>
@@ -88,8 +90,8 @@ export default defineComponent({
       volume: 0,
       playing: false,
       connected: null,
-      movie: ''
-
+      movie: '',
+      seek: 43
     }
   },
   computed: {
@@ -143,6 +145,9 @@ export default defineComponent({
     },
     onPause() {
       ipcRenderer.send('device-pause')
+    },
+    onSeek() {
+      ipcRenderer.send('device-set-seek',this.seek)
     },
     bindEvent() {
       ipcRenderer.on('device-connect-change', (event: any, status: any, message: any) => {

@@ -1,19 +1,10 @@
 # rctv
 
-## Project setup
-```
-npm install
-```
+使用upnp连接电视机顶盒，并将电脑视频发送到电视。
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+技术栈
+- vue 3
+- typescript
+- antdv 
+- express
+- electron

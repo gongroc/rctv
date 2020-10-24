@@ -45,6 +45,9 @@ export default class Controller {
         ipcMain.on('device-fetch-status', (event) => {
             unpnService.fetchStatus()
         })
+        ipcMain.on('device-set-seek', (event,pos) => {
+            unpnService.seek(pos)
+        })
 
 
     }
