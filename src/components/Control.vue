@@ -57,8 +57,10 @@
             <a-button @click="onVolumePlus">音量+</a-button>
             <a-button @click="onPlay" :disabled="playing">播放</a-button>
             <a-button @click="onPause" :disabled="!playing">暂停</a-button>
-            <a-input v-model:value="seek" type="number" style="width: 100px; margin-right: 10px"/>
-            <a-button @click="onSeek" :disabled="!playing">设置进度</a-button>
+            <template v-if="!isHLS">
+              <a-input v-model:value="seek" type="number" style="width: 100px; margin-right: 10px"/>
+              <a-button @click="onSeek" :disabled="!playing">设置进度</a-button>
+            </template>
             <a-button @click="onDisconnect">断开连接</a-button>
           </template>
           <template v-else>
@@ -106,7 +108,13 @@ export default defineComponent({
       }
       return ""
     },
-
+    isHLS() {
+      let flag = false
+      if (this.movie && this.movie.endsWith('m3u8')) {
+        flag = true
+      }
+      return flag
+    }
   },
   watch: {},
   methods: {
@@ -147,7 +155,7 @@ export default defineComponent({
       ipcRenderer.send('device-pause')
     },
     onSeek() {
-      ipcRenderer.send('device-set-seek',this.seek)
+      ipcRenderer.send('device-set-seek', this.seek)
     },
     bindEvent() {
       ipcRenderer.on('device-connect-change', (event: any, status: any, message: any) => {
@@ -179,7 +187,7 @@ export default defineComponent({
     },
     fetchStatus() {
       ipcRenderer.send('device-fetch-status')
-    }
+    },
   },
   mounted() {
     this.fetchAllDevice()

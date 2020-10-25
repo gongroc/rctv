@@ -1,4 +1,5 @@
 import MainWindow from "./MainWindow";
+import {IpcRendererEvent, OpenDialogReturnValue} from "electron";
 
 const {ipcRenderer, dialog, shell} = require('electron');
 const Store = require('electron-store');
@@ -10,12 +11,12 @@ const app = express()
 
 export default class WebService {
 
-    private files = []
+    private files: any[] = []
     private running = false
     private mainWindow: MainWindow = MainWindow.getInstance()
     private store = new Store();
     private port = 8000
-    private server
+    private server: any
     private static instance: WebService
 
 
@@ -74,7 +75,7 @@ export default class WebService {
     public fetchAllFiles() {
         let dir = this.getDir()
         this.files = []
-        rd.eachFileSync(dir, (f) => {
+        rd.eachFileSync(dir, (f: string) => {
             let name = f.replace(dir + '/', "")
             this.files.push({
                 name: name,
@@ -94,8 +95,8 @@ export default class WebService {
     }
 
     public setDir() {
-        ipcRenderer.on('openDialog', (event) => {
-            dialog.showOpenDialog({}).then(result => {
+        ipcRenderer.on('openDialog', (event: IpcRendererEvent) => {
+            dialog.showOpenDialog({}).then((result: OpenDialogReturnValue) => {
                 console.log(result);
             })
         })
